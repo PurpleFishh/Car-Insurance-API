@@ -6,9 +6,9 @@ namespace CarInsurance.Api.Controllers;
 
 [ApiController]
 [Route("api")]
-public class CarsController(CarService service) : ControllerBase
+public class CarsController(ICarService service) : ControllerBase
 {
-    private readonly CarService _service = service;
+    private readonly ICarService _service = service;
 
     [HttpGet("cars")]
     public async Task<ActionResult<List<CarDto>>> GetCars()

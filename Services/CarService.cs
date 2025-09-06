@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarInsurance.Api.Services;
 
-public class CarService(AppDbContext db)
+public class CarService(AppDbContext db) : ICarService
 {
     private readonly AppDbContext _db = db;
 
