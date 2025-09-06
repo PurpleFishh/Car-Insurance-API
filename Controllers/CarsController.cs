@@ -30,4 +30,39 @@ public class CarsController(CarService service) : ControllerBase
             return NotFound();
         }
     }
+    
+    [HttpPost("cars/{carId:long}/claims")]
+    public async Task<ActionResult<ClaimDto>> RegisterCarClaim(long carId, [FromBody]CreateClaimRequest request) 
+    {
+        if (request.ClaimDate > DateOnly.FromDateTime(DateTime.Now))
+            return BadRequest("Claim date cannot be in the future.");
+        
+        try
+        {
+            var claim = await _service.RegisterClaimAsync(carId, request);
+            return Ok(claim);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
+    [HttpGet("cars/{carId:long}/history")]
+    public async Task<ActionResult<List<HistoryDto>>> GetCarHistory(long carId)
+    {
+        try
+        {
+            var history = await _service.GetCarHistoryAsync(carId);
+            return Ok(history);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

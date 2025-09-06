@@ -3,6 +3,7 @@ using System;
 using CarInsurance.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarInsurance.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250906154123_AddClaimModel")]
+    partial class AddClaimModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.5");
@@ -131,7 +134,7 @@ namespace CarInsurance.Api.Migrations
             modelBuilder.Entity("CarInsurance.Api.Models.Claim", b =>
                 {
                     b.HasOne("CarInsurance.Api.Models.Car", "Car")
-                        .WithMany("Claims")
+                        .WithMany()
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -152,8 +155,6 @@ namespace CarInsurance.Api.Migrations
 
             modelBuilder.Entity("CarInsurance.Api.Models.Car", b =>
                 {
-                    b.Navigation("Claims");
-
                     b.Navigation("Policies");
                 });
 
