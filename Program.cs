@@ -21,7 +21,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    // db.Database.EnsureCreated(); removed because migrating the db for changes is a better solution for a production scenario
+    db.Database.Migrate();
     SeedData.EnsureSeeded(db);
 }
 
