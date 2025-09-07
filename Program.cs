@@ -1,4 +1,5 @@
 using CarInsurance.Api.Data;
+using CarInsurance.Api.Handlers;
 using CarInsurance.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,8 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default"));
 });
+
+builder.Services.AddExceptionHandler<ExceptionHandler>();
 
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddHostedService<PolicyExpiredNotifierService>();
@@ -27,11 +30,14 @@ using (var scope = app.Services.CreateScope())
     SeedData.EnsureSeeded(db);
 }
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler(_ => { });
 
 app.UseHttpsRedirection();
 app.MapControllers();

@@ -1,5 +1,6 @@
 using CarInsurance.Api.Data;
 using CarInsurance.Api.Dtos;
+using CarInsurance.Api.Exceptions;
 using CarInsurance.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ public class CarService(AppDbContext db) : ICarService
     {
         var vinExists = await _db.Cars.AnyAsync(c => c.Vin == request.Vin);
         if (vinExists)
-            throw new InvalidOperationException($"Car with VIN {request.Vin} already exists.");
+            throw new NotUniqueVinException(request.Vin);
 
         var ownerExists = await _db.Owners.AnyAsync(o => o.Id == request.OwnerId);
         if (!ownerExists)
