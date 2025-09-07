@@ -1,4 +1,5 @@
 using CarInsurance.Api.Data;
+using CarInsurance.Api.Handlers;
 using CarInsurance.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,10 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default"));
 });
 
-builder.Services.AddScoped<CarService>();
+builder.Services.AddExceptionHandler<ExceptionHandler>();
+
+builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddHostedService<PolicyExpiredNotifierService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -21,15 +25,19 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    // db.Database.EnsureCreated(); removed because migrating the db for changes is a better solution for a production scenario
+    db.Database.Migrate();
     SeedData.EnsureSeeded(db);
 }
+
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler(_ => { });
 
 app.UseHttpsRedirection();
 app.MapControllers();

@@ -7,7 +7,28 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="CarInsurance.Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="CarInsurance.Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="CarInsurance.Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="CarInsurance.Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="CarInsurance.Tests\obj\CarInsurance.Tests.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="CarInsurance.Tests\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="CarInsurance.Tests\obj\project.packagespec.json" />
   </ItemGroup>
 </Project>
