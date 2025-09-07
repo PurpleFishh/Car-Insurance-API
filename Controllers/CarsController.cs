@@ -13,6 +13,23 @@ public class CarsController(ICarService service) : ControllerBase
     [HttpGet("cars")]
     public async Task<ActionResult<List<CarDto>>> GetCars()
         => Ok(await _service.ListCarsAsync());
+    
+    [HttpPost("cars")]
+    public async Task<ActionResult<CarDto>> CreateCar([FromBody] CreateCarRequest request)
+    {
+        try
+        {
+            return Ok(await _service.CreateCarAsync(request));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 
     [HttpGet("cars/{carId:long}/insurance-valid")]
     public async Task<ActionResult<InsuranceValidityResponse>> IsInsuranceValid(long carId, [FromQuery] string date)

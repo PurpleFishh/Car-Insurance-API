@@ -16,6 +16,37 @@ public class CarService(AppDbContext db) : ICarService
             .ToListAsync();
     }
 
+    public async Task<CarDto> CreateCarAsync(CreateCarRequest request)
+    {
+        var vinExists = await _db.Cars.AnyAsync(c => c.Vin == request.Vin);
+        if (vinExists)
+            throw new InvalidOperationException($"Car with VIN {request.Vin} already exists.");
+
+        var ownerExists = await _db.Owners.AnyAsync(o => o.Id == request.OwnerId);
+        if (!ownerExists)
+            throw new KeyNotFoundException($"Owner with ID {request.OwnerId} not found.");
+
+
+        var newCar = new Car
+        {
+            Vin = request.Vin,
+            Make = request.Make,
+            Model = request.Model,
+            YearOfManufacture = request.YearOfManufacture,
+            OwnerId = request.OwnerId
+        };
+
+        _db.Cars.Add(newCar);
+        await _db.SaveChangesAsync();
+
+        // fetch the car with owner details
+        var createdCar = await _db.Cars
+            .Include(c => c.Owner)
+            .FirstAsync(c => c.Id == newCar.Id);
+
+        return DtosMapper.CarToDto(createdCar);
+    }
+
     public async Task<bool> IsInsuranceValidAsync(long carId, DateOnly date)
     {
         var carExists = await _db.Cars.AnyAsync(c => c.Id == carId);
@@ -60,12 +91,12 @@ public class CarService(AppDbContext db) : ICarService
         if (car == null) throw new KeyNotFoundException($"Car {carId} not found");
 
         var policies = car.Policies
-            .Select(p => new HistoryDto(nameof(EventType.PolicyAdded), p.StartDate,
+            .Select(p => new HistoryDto(nameof(EventTypes.PolicyAdded), p.StartDate,
                 $"Insurance with {p.Provider} from {p.StartDate} to {p.EndDate}."))
             .ToList();
 
         var claims = car.Claims
-            .Select(c => new HistoryDto(nameof(EventType.ClaimRegistered), c.ClaimDate,
+            .Select(c => new HistoryDto(nameof(EventTypes.ClaimRegistered), c.ClaimDate,
                 $"Claim for {c.Amount} - '{c.Description}'."))
             .ToList();
 
