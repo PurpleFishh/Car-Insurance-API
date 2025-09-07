@@ -51,9 +51,6 @@ public class CarsController(ICarService service) : ControllerBase
     [HttpPost("cars/{carId:long}/claims")]
     public async Task<ActionResult<ClaimDto>> RegisterCarClaim(long carId, [FromBody]CreateClaimRequest request) 
     {
-        if (request.ClaimDate > DateOnly.FromDateTime(DateTime.Now))
-            return BadRequest("Claim date cannot be in the future.");
-        
         try
         {
             var claim = await _service.RegisterClaimAsync(carId, request);

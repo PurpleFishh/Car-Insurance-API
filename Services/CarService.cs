@@ -61,6 +61,9 @@ public class CarService(AppDbContext db) : ICarService
 
     public async Task<ClaimDto> RegisterClaimAsync(long carId, CreateClaimRequest request)
     {
+        if (request.ClaimDate > DateOnly.FromDateTime(DateTime.Now))
+            throw new InvalidOperationException("Claim date cannot be in the future.");
+        
         var carWithValidPolicy = await _db.Cars
             .Where(c => c.Id == carId &&
                         c.Policies.Any(p => p.StartDate <= request.ClaimDate && p.EndDate >= request.ClaimDate))
