@@ -23,7 +23,7 @@ public class PolicyExpiredNotifierService(
                 logger.LogError(ex, "An error occurred while checking for expired policies.");
             }
 
-            await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
+            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
         }
 
         logger.LogInformation("Expired Policy Notifier Service is stopping.");
