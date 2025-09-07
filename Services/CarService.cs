@@ -61,12 +61,19 @@ public class CarService(AppDbContext db) : ICarService
 
     public async Task<ClaimDto> RegisterClaimAsync(long carId, CreateClaimRequest request)
     {
-        var car = await _db.Cars.FindAsync(carId);
-        if (car == null) throw new KeyNotFoundException($"Car {carId} not found");
-
-        var isInsuranceValid = await IsInsuranceValidAsync(carId, request.ClaimDate);
-        if (!isInsuranceValid)
+        var carWithValidPolicy = await _db.Cars
+            .Where(c => c.Id == carId &&
+                        c.Policies.Any(p => p.StartDate <= request.ClaimDate && p.EndDate >= request.ClaimDate))
+            .FirstOrDefaultAsync();
+        if (carWithValidPolicy == null)
+        {
+            var carExists = await _db.Cars.AnyAsync(c => c.Id == carId);
+            if (!carExists)
+                throw new KeyNotFoundException($"Car {carId} not found");
+            // if the car exists it means it does not have valid insurance
             throw new InvalidOperationException($"Car {carId} does not have valid insurance");
+        }
+            
 
         var newClaim = new Claim
         {
