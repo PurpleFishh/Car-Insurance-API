@@ -2,7 +2,7 @@
 
 namespace CarInsurance.Api.Dtos;
 
-public class DtosMapper
+public static class DtosMapper
 {
     public static CarDto CarToDto(Car car) => new CarDto(
         car.Id, car.Vin, car.Make, car.Model, car.YearOfManufacture,
